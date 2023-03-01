@@ -16,7 +16,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.igrium.imm_pgun.ImmersivePortalGunClient"
+            "com.igrium.imm_pgun.ImmersivePortalGunMod"
         ],
         "client": [
             "com.igrium.imm_pgun.ImmersivePortalGunClient"
