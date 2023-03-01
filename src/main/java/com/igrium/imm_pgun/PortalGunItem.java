@@ -11,9 +11,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
+import net.minecraft.world.World.ExplosionSourceType;
+import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class PortalGunItem extends Item {
+
+    private static final double MAX_RAYCAST_DISTANCE = 128d;
 
     public PortalGunItem(Settings settings) {
         super(settings);
@@ -26,7 +31,14 @@ public class PortalGunItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        return super.use(world, user, hand);
+        if (world.isClient) return TypedActionResult.consume(user.getStackInHand(hand));
+        
+        HitResult hit = user.raycast(MAX_RAYCAST_DISTANCE, 1, false);
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            world.createExplosion(user, null, new ExplosionBehavior(), hit.getPos().getX(), hit.getPos().getY(), hit.getPos().getZ(), 1, false, ExplosionSourceType.TNT);
+        }
+
+        return TypedActionResult.consume(user.getStackInHand(hand));
     }
 
     public UUID getOrCreateLinkID(ItemStack stack) {
