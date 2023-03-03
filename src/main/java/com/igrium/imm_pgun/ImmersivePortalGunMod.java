@@ -1,5 +1,8 @@
 package com.igrium.imm_pgun;
 
+import com.igrium.imm_pgun.entity.NullPortalEntity;
+import com.igrium.imm_pgun.entity.PlacedPortalEntity;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.registry.Registries;
@@ -18,5 +21,8 @@ public class ImmersivePortalGunMod implements ModInitializer {
     @Override
     public void onInitialize() {
         Registry.register(Registries.ITEM, new Identifier("immersive_portalgun", "portalgun"), PORTAL_GUN_ITEM);
+
+        Registry.register(Registries.ENTITY_TYPE, new Identifier("immersive_portalgun", "placed_portal"), PlacedPortalEntity.TYPE);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier("immersive_portalgun", "null_portal"), NullPortalEntity.TYPE);
     }
 }
