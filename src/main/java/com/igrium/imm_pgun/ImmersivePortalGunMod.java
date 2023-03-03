@@ -7,6 +7,12 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ImmersivePortalGunMod implements ModInitializer {
+
+    public static enum PortalColor {
+        BLUE,
+        ORANGE
+    }
+
     public static final PortalGunItem PORTAL_GUN_ITEM = new PortalGunItem(new FabricItemSettings().maxCount(1));
 
     @Override
