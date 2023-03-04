@@ -10,12 +10,22 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 public class ImmersivePortalGunMod implements ModInitializer {
 
     public static enum PortalColor {
-        BLUE,
-        ORANGE
+        BLUE(ColorHelper.Argb.getArgb(255, 23, 100, 255)),
+        ORANGE(ColorHelper.Argb.getArgb(255, 255, 107, 15));
+
+        private final int color;
+        private PortalColor(int color) {
+            this.color = color;
+        }
+
+        public int getColor() {
+            return color;
+        }
     }
 
     public static final PortalGunItem PORTAL_GUN_ITEM = new PortalGunItem(new FabricItemSettings().maxCount(1));
