@@ -1,5 +1,7 @@
 package com.igrium.imm_pgun.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,9 +13,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -28,8 +30,8 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
 
     public static final EntityType<NullPortalEntity> TYPE = FabricEntityTypeBuilder.create(SpawnGroup.MISC, NullPortalEntity::new).build();
 
-    private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(PlacedPortalEntity.class,
-            TrackedDataHandler.ofEnum(PortalColor.class));
+    private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(
+        PlacedPortalEntity.class, CustomTrackedDataHandlers.PORTAL_COLOR);
 
     private UUID linkID = UUID.randomUUID();
     private Direction direction;
@@ -100,9 +102,17 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
         // Because we remove these entities during the tick cycle, we need to make sure
         // this wasn't removed by another instance.
         if (isRemoved()) return;
-        if (world.isClient) return;
+        if (world instanceof ServerWorld serverWorld) {
+            List<NullPortalEntity> list = new ArrayList<>(1);
+            serverWorld.collectEntitiesByType(NullPortalEntity.TYPE,
+                    other -> other != this && other.getLinkID().equals(linkID), list, 1);
 
-
+            // List will only ever have one entry.
+            if (!list.isEmpty()) {
+                connect(list.get(0));
+                return;
+            }
+        }
     }
 
     /**
@@ -111,6 +121,7 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
      * @return The portal entity created to represent this portal.
      */
     protected PlacedPortalEntity connect(NullPortalEntity other) {
+        if (other == this) throw new IllegalArgumentException("Can't connect to `this`.");
         if (world.isClient) throw new IllegalStateException("This method can only be called on the server.");
 
         PlacedPortalEntity thisPortal = PlacedPortalEntity.TYPE.create(world);

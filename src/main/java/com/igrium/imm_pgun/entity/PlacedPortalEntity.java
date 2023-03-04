@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Direction;
@@ -30,8 +29,8 @@ public class PlacedPortalEntity extends Portal implements IPortalEntity {
         super(entityType, world);
     }
     
-    private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(PlacedPortalEntity.class,
-            TrackedDataHandler.ofEnum(PortalColor.class));
+    private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(
+            PlacedPortalEntity.class, CustomTrackedDataHandlers.PORTAL_COLOR);
 
 
     private UUID linkID = UUID.randomUUID();
