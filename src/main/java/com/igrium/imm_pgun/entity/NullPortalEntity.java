@@ -9,6 +9,8 @@ import com.igrium.imm_pgun.ImmersivePortalGunMod.PortalColor;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
@@ -16,6 +18,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -28,7 +31,8 @@ import qouteall.q_misc_util.my_util.DQuaternion;
  */
 public class NullPortalEntity extends Entity implements IPortalEntity {
 
-    public static final EntityType<NullPortalEntity> TYPE = FabricEntityTypeBuilder.create(SpawnGroup.MISC, NullPortalEntity::new).build();
+    public static final EntityType<NullPortalEntity> TYPE = FabricEntityTypeBuilder
+            .create(SpawnGroup.MISC, NullPortalEntity::new).dimensions(EntityDimensions.fixed(1f, 2f)).build();
 
     private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(
         PlacedPortalEntity.class, CustomTrackedDataHandlers.PORTAL_COLOR);
@@ -114,6 +118,36 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
             }
         }
     }
+
+    @Override
+    public float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return 0;
+    }
+
+    @Override
+    protected Box calculateBoundingBox() {
+        float width = 1;
+        float height = 2;
+
+        // Vec3d lowerCorner = new Vec3d(-width / 2, -height / 2, 0)
+        //         .rotateX(Math.toRadians(getPitch())).rotateY(Math.toRadians(getYaw()));
+        // Vec3d upperCorner = new Vec3d(width / 2, height / 2, 0)
+        //         .rotateX(Math.toRadians(getPitch())).rotateY(Math.toRadians(getYaw()));
+
+        // lowerCorner = lowerCorner.add(getPos());
+        // upperCorner = upperCorner.add(getPos());
+
+        // return new Box(Math.min(lowerCorner.x, upperCorner.x),
+        //         Math.min(lowerCorner.y, upperCorner.y),
+        //         Math.min(lowerCorner.z, upperCorner.z),
+        //         Math.max(lowerCorner.x, upperCorner.x),
+        //         Math.max(lowerCorner.y, upperCorner.y),
+        //         Math.max(lowerCorner.z, upperCorner.z));
+
+        Vec3d halfSize = new Vec3d(width / 2, height / 2, width / 2);
+        return new Box(getPos().subtract(halfSize), getPos().add(halfSize));
+    }
+    
 
     /**
      * Connect this portal with another portal.
