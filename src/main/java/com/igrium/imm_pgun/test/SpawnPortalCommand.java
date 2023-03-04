@@ -46,6 +46,7 @@ public final class SpawnPortalCommand {
             NullPortalEntity entity = NullPortalEntity.TYPE.create(context.getSource().getWorld());
     
             entity.setPosition(pos);
+            // entity.setYaw(MathHelper.nextInt(random, -1, 2) * 90f);
             entity.setYaw(MathHelper.nextFloat(random, -180, 180));
             entity.setLinkID(linkID);
     

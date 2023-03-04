@@ -129,13 +129,14 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
         copyAttributes(this, thisPortal);
 
         DQuaternion thisOrientation = DQuaternion.fromEulerAngle(
-                new Vec3d(thisPortal.getYaw(), thisPortal.getPitch(), 0));
+                new Vec3d(thisPortal.getPitch(), thisPortal.getYaw(), 0));
         
         DQuaternion otherOrientation = DQuaternion.fromEulerAngle(
-                new Vec3d(other.getYaw(), other.getPitch(), 0));
+                new Vec3d(other.getPitch(), other.getYaw(), 0));
 
         // Subtract this orientation from the other to get the delta.
-        DQuaternion deltaOrientation = otherOrientation.combine(thisOrientation.getConjugated());
+        DQuaternion deltaOrientation = otherOrientation.combine(thisOrientation.getConjugated()).combine(
+                DQuaternion.rotationByDegrees(new Vec3d(0, 1, 0), 180));
 
         thisPortal.setDestination(other.getPos());
         thisPortal.setDestinationDimension(other.world.getRegistryKey());
