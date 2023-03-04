@@ -71,7 +71,7 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
         return dataTracker.get(PORTAL_COLOR);
     }
 
-    protected void setPortalColor(PortalColor portalColor) {
+    public void setPortalColor(PortalColor portalColor) {
         dataTracker.set(PORTAL_COLOR, portalColor);
     }
 
@@ -199,6 +199,25 @@ public class NullPortalEntity extends Entity implements IPortalEntity {
 
         to.setPortalColor(from.getPortalColor());
         to.setLinkID(from.getLinkID());
+    }
+
+    public NullPortalEntity move(ServerWorld dimension, Vec3d pos, float pitch, float yaw) {
+        if (dimension == this.world) {
+            setPosition(pos);
+            setPitch(pitch);
+            setYaw(yaw);
+            return this;
+        } else {
+            NullPortalEntity newEntity = NullPortalEntity.TYPE.create(dimension);
+            newEntity.copyFrom(this);
+            newEntity.setPosition(pos);
+            newEntity.setPitch(pitch);
+            newEntity.setYaw(yaw);
+
+            this.remove(RemovalReason.CHANGED_DIMENSION);
+            dimension.onDimensionChanged(newEntity);
+            return newEntity;
+        }
     }
 
     // private static void initOrientationAndSize(Portal portal, float pitch, float yaw) {

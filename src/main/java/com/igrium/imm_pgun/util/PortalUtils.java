@@ -1,8 +1,16 @@
 package com.igrium.imm_pgun.util;
 
-import java.util.Objects;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
-import qouteall.imm_ptl.core.portal.Portal;
+import com.igrium.imm_pgun.ImmersivePortalGunMod.PortalColor;
+import com.igrium.imm_pgun.entity.IPortalEntity;
+import com.igrium.imm_pgun.entity.NullPortalEntity;
+
+import net.minecraft.entity.Entity.RemovalReason;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * A set of static utility functions related to portals.
@@ -10,24 +18,25 @@ import qouteall.imm_ptl.core.portal.Portal;
 public final class PortalUtils {
     private PortalUtils() {};
 
-    /**
-     * Link two existing portal entities. The position and rotation of each portal
-     * entity is maintained, and all the other attributes of the first portal entity
-     * are copied to the second.
-     * 
-     * @param first  The first portal.
-     * @param second The second portal.
-     * @param sync   Whether to sync this change to the client.
-     */
-    public static void linkPortals(Portal first, Portal second, boolean sync) {
-        Objects.requireNonNull(first);
-        Objects.requireNonNull(second);
+    public static void placePortal(ServerWorld world, Vec3d pos, float pitch, float yaw, PortalColor color, UUID linkID) {
+        List<IPortalEntity> portals = new LinkedList<>();
+        WorldUtils.collectEntitiesbyInterface(IPortalEntity.class,
+                world,
+                ent -> ent.getLinkID().equals(linkID) && ent.getPortalColor().equals(color),
+                portals);
 
-        first.dimensionTo = second.getOriginDim();
-        first.setDestination(second.getOriginPos());
+        portals.forEach(portal -> {
+            portal.asEntity().remove(RemovalReason.KILLED);
+        });
 
-        if (second.getRotation() != null) {
-            
-        }
+        NullPortalEntity newPortal = NullPortalEntity.TYPE.create(world);
+        newPortal.setPosition(pos);
+        newPortal.setPitch(pitch);
+        newPortal.setYaw(yaw);
+        
+        newPortal.setLinkID(linkID);
+        newPortal.setPortalColor(color);
+
+        world.spawnEntity(newPortal);
     }
 }
