@@ -2,6 +2,8 @@ package com.igrium.imm_pgun.entity;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.igrium.imm_pgun.ImmersivePortalGunMod.PortalColor;
 import com.mojang.logging.LogUtils;
@@ -15,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import qouteall.imm_ptl.core.portal.GeometryPortalShape;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalExtension;
 
@@ -27,6 +30,23 @@ public class PlacedPortalEntity extends Portal implements IPortalEntity {
 
     public PlacedPortalEntity(EntityType<?> entityType, World world) {
         super(entityType, world);
+
+        int width = 1;
+        int height = 2;
+
+        GeometryPortalShape shape = new GeometryPortalShape();
+        final int triangleNum = 30;
+        double twoPi = Math.PI * 2;
+        shape.triangles = IntStream.range(0, triangleNum)
+            .mapToObj(i -> new GeometryPortalShape.TriangleInPlane(
+                0, 0,
+                width * 0.5 * Math.cos(twoPi * ((double) i) / triangleNum),
+                height * 0.5 * Math.sin(twoPi * ((double) i) / triangleNum),
+                width * 0.5 * Math.cos(twoPi * ((double) i + 1) / triangleNum),
+                height * 0.5 * Math.sin(twoPi * ((double) i + 1) / triangleNum)
+            )).collect(Collectors.toList());
+            
+        specialShape = shape;
     }
     
     private static final TrackedData<PortalColor> PORTAL_COLOR = DataTracker.registerData(
